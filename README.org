@@ -1,5 +1,5 @@
-* org-parser-tree
-Building upon the awesome https://github.com/200ok-ch/org-parser org-parser-tree provides utilities to create a tree structure in clojure from an org file
+* org-parser-tree (WIP 👷)
+Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]], =org-parser-tree= provides utilities to create a tree structure in clojure from an org file
 
 ** Usage
 #+BEGIN_SRC clojurescript
@@ -21,3 +21,51 @@ Building upon the awesome https://github.com/200ok-ch/org-parser org-parser-tree
          org-parse-tree/parse-tree
          (org-parse-tree/store-tree "resources/journal.edn")))
 #+END_SRC
+*** Result
+#+BEGIN_SRC clojurescript
+  {:title "root",
+   :stars "",
+   :children
+   ({:tags nil,
+     :type :head-line,
+     :title "2019",
+     :stars "*",
+     :children
+     ({:tags nil,
+       :type :head-line,
+       :title "Unordered",
+       :stars "**",
+       :children
+       ({:tags nil,
+         :type :head-line,
+         :title "Sometime",
+         :stars "***",
+         :children
+         ({:tags ("LEARN" "TUTORIAL"),
+           :type :head-line,
+           :title "Clojure Spec basics",
+           :stars "****",
+           :children []})})}
+      {:tags nil,
+       :type :head-line,
+       :title "2019-01 January",
+       :stars "**",
+       :children
+       ({:tags nil,
+         :type :head-line,
+         :title "KW01",
+         :stars "***",
+         :children
+         ({:tags ("SOCIAL"),
+           :type :head-line,
+           :title "Build a snowman",
+           :stars "****",
+           :children []}
+          {:tags ("SOCIAL"),
+           :type :head-line,
+           :title "Game night",
+           :stars "****"})})})})}
+#+END_SRC
+
+#+DOWNLOADED: screenshot @ 2020-12-22 12:37:32
+[[file:resources/org-parser-tree/2020-12-22_12-37-32_screenshot.png]]
