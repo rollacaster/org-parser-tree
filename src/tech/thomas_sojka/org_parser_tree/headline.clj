@@ -19,8 +19,7 @@
     (let [[title people] (str/split title #" with ")]
       (-> headline
           (assoc :title (str/replace title (str " with " people) ""))
-          (assoc :people
-           (into [] (map str/trim (str/split people #","))))))
+          (assoc :people (set (map str/trim (str/split people #","))))))
     headline))
 
 (defn parse [line]
@@ -28,8 +27,8 @@
     (case type
       :head-line (let [[[_ stars] [_ & title] [_ & tags]] content
                        title (str/join " " title)]
-                   (-> {:title title :type type :stars stars :tags tags}
-                       #_org-link->clj
+                   (-> {:title title :type type :stars stars :tags (set tags)}
+                       org-link->clj
                        #_(get-people tags)))
       :content-line {:type type
                      :content (str/join " " (map str/trim content))}
