@@ -1,0 +1,4 @@
+{:deps {rollacaster/org-parser
+        {:git/url "https://github.com/rollacaster/org-parser" :sha "937ee136741625c8fd712de61417e06018d0bfdf"}
+        rhizome/rhizome {:mvn/version "0.2.9"}}
+ :paths ["src" "resources"]}
