@@ -9,7 +9,8 @@
 (defn build-tree [headlines]
   (reduce
    (fn [org-tree headline]
-     (let [{:keys [type]} headline]
+     (let [{:keys [type]} headline
+           edit (fn [& args] (apply z/edit (z/rightmost org-tree) update args))]
        (case type
          :head-line
          (let [previous-level (count (:stars (z/node org-tree)))
@@ -26,9 +27,9 @@
                    z/down
                    z/rightmost))))
          :content-line
-         (z/edit org-tree update :content str (:content headline))
+         (edit :content str (:content headline))
          :list-item-line
-         (z/edit org-tree update :list (fn [list] (if (coll? list) (conj list (:list-item headline)) [(:list-item headline)])))
+         (edit :list (fn [list] (if (coll? list) (conj list (:list-item headline)) [(:list-item headline)])))
          org-tree)))
    (z/zipper (comp sequential? :children)
              :children
