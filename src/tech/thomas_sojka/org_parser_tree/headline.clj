@@ -23,12 +23,15 @@
            (into [] (map str/trim (str/split people #","))))))
     headline))
 
-(defn parse [headline]
-  (let [[type [_ stars] [key & title] [_ & tags]] headline]
-    (if (= :title key)
-      (let [title (str/join " " title)]
-        (-> {:title title :type type :stars stars :tags tags}
-            #_org-link->clj
-            #_(get-people tags)))
-      headline)))
+(defn parse [line]
+  (let [[type & content] line]
+    (case type
+      :head-line (let [[[_ stars] [_ & title] [_ & tags]] content
+                       title (str/join " " title)]
+                   (-> {:title title :type type :stars stars :tags tags}
+                       #_org-link->clj
+                       #_(get-people tags)))
+      :content-line {:type type
+                     :content (str/join " " (map str/trim content))}
+      line)))
 

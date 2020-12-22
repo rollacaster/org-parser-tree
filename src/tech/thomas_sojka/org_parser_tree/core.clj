@@ -9,22 +9,32 @@
 (defn build-tree [headlines]
   (reduce
    (fn [org-tree headline]
-     (let [{:keys [stars]} (z/node org-tree)]
-       (cond
-         (= (count stars) (count (:stars headline)))
-         (z/insert-right org-tree headline)
-         (< (count stars) (count (:stars headline)))
+     (let [{:keys [type]} headline]
+       (case type
+         :head-line
+         (let [{:keys [stars]} (z/node org-tree)]
+             (cond
+               (= (count stars) (count (:stars headline)))
+               (z/insert-right org-tree headline)
+               (< (count stars) (count (:stars headline)))
+               (-> org-tree
+                   (z/append-child (merge headline {:children []}))
+                   z/down
+                   z/rightmost)
+               (> (count stars) (count (:stars headline)))
+               (let [go-up (apply comp (repeat (inc (- (count stars) (count (:stars headline)))) z/up))]
+                 (-> org-tree
+                     go-up
+                     (z/append-child (merge headline {:children []}))
+                     z/down
+                     z/rightmost))))
+         :content-line
+         (z/edit org-tree
+                 (fn [node] (update node :content str (:content headline))))
          (-> org-tree
-             (z/append-child (merge headline {:children []}))
-             z/down
-             z/rightmost)
-         (> (count stars) (count (:stars headline)))
-         (let [go-up (apply comp (repeat (inc (- (count stars) (count (:stars headline)))) z/up))]
-           (-> org-tree
-               go-up
-               (z/append-child (merge headline {:children []}))
-               z/down
-               z/rightmost)))))
+                   (z/append-child (merge headline {:children []}))
+                   z/down
+                   z/rightmost))))
    (z/zipper (comp sequential? :children)
              :children
              (fn [node children] (assoc node :children children))
