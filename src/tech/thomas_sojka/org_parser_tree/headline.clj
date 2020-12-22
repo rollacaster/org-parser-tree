@@ -33,5 +33,8 @@
                        #_(get-people tags)))
       :content-line {:type type
                      :content (str/join " " (map str/trim content))}
+      :list-item-line
+      (let [[[_ counter] [_ suffix] [_ contents]] content]
+        {:type type :list-item (str counter suffix " " contents)})
       line)))
 

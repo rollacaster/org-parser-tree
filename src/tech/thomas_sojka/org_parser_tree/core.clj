@@ -31,6 +31,9 @@
          :content-line
          (z/edit org-tree
                  (fn [node] (update node :content str (:content headline))))
+         :list-item-line
+         (z/edit org-tree
+                 (fn [node] (update node :list (fn [list] (if (coll? list) (conj list (:list-item headline)) [(:list-item headline)])))))
          (-> org-tree
                    (z/append-child (merge headline {:children []}))
                    z/down
