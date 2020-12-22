@@ -59,6 +59,7 @@
   (->> org-file-string
        parser/org
        (drop 1)
+       (remove (fn [[type]] (= type :empty-line)))
        (map headline/parse)
        build-tree
        z/root))
