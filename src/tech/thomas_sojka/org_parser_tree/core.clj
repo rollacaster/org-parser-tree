@@ -12,32 +12,24 @@
      (let [{:keys [type]} headline]
        (case type
          :head-line
-         (let [{:keys [stars]} (z/node org-tree)]
-             (cond
-               (= (count stars) (count (:stars headline)))
-               (z/insert-right org-tree headline)
-               (< (count stars) (count (:stars headline)))
+         (let [previous-level (count (:stars (z/node org-tree)))
+               current-level (count (:stars headline))]
+           (cond
+             (= previous-level current-level)
+             (z/insert-right org-tree headline)
+             :else
+             (let [next (apply comp (repeat (inc (- previous-level current-level))
+                                            (if (> previous-level current-level) z/up z/down)))]
                (-> org-tree
-                   (z/append-child (merge headline {:children []}))
-                   z/down
-                   z/rightmost)
-               (> (count stars) (count (:stars headline)))
-               (let [go-up (apply comp (repeat (inc (- (count stars) (count (:stars headline)))) z/up))]
-                 (-> org-tree
-                     go-up
-                     (z/append-child (merge headline {:children []}))
-                     z/down
-                     z/rightmost))))
-         :content-line
-         (z/edit org-tree
-                 (fn [node] (update node :content str (:content headline))))
-         :list-item-line
-         (z/edit org-tree
-                 (fn [node] (update node :list (fn [list] (if (coll? list) (conj list (:list-item headline)) [(:list-item headline)])))))
-         (-> org-tree
+                   next
                    (z/append-child (merge headline {:children []}))
                    z/down
                    z/rightmost))))
+         :content-line
+         (z/edit org-tree update :content str (:content headline))
+         :list-item-line
+         (z/edit org-tree update :list (fn [list] (if (coll? list) (conj list (:list-item headline)) [(:list-item headline)])))
+         org-tree)))
    (z/zipper (comp sequential? :children)
              :children
              (fn [node children] (assoc node :children children))
