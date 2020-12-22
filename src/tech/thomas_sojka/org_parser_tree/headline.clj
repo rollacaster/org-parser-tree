@@ -2,17 +2,14 @@
   (:require [clojure.string :as str]))
 
 (defn org-link->clj [headline]
-  (if (str/starts-with? (:title headline) "[[")
-    (let [[link description]
-          (drop 1
-                (re-find
-                 (re-matcher
-                  #"\[\[(.*)\]\[(.*)\]\]"
-                  (:title headline))))]
-      (-> headline
-          (assoc :link link)
-          (assoc :title description)))
-    headline))
+  (let [re-org-link #"\[\[(.*)\]\[(.*)\]\]"]
+      (if (str/includes? (:title headline) "[[")
+        (let [[link description]
+              (drop 1 (re-find (re-matcher re-org-link (:title headline))))]
+          (-> headline
+              (assoc :link link)
+              (assoc :title (str/replace (:title headline) re-org-link description))))
+        headline)))
 
 (defn get-people [{:keys [title] :as headline} tags]
   (if (and (some #{"SOCIAL"} tags) (str/includes? title "with"))
