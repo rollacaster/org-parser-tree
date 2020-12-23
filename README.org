@@ -77,7 +77,7 @@ By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possi
 *** transform
 You can customise how a parsed line from [[https://github.com/200ok-ch/org-parser][org-parser]] is transformed
 #+BEGIN_SRC clojurescript
-  (ns tech.thomas-sojka.org-parser-tree.main
+  (ns hello-world.core
     (:require [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
               [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
@@ -157,7 +157,7 @@ You can customise how a parsed line from =org-parser-tree= is transformed
 *** stratify
 You can customise how =org-parser-tree= builds the tree using the [[https://clojure.github.io/clojure/clojure.zip-api.html][clojure.zip API]]
 #+BEGIN_SRC clojurescript
-  (ns tech.thomas-sojka.org-parser-tree.main
+  (ns hello-world.core
     (:require [clojure.zip :as z]
               [tech.thomas-sojka.org-parser-tree.core
                :refer
