@@ -6,33 +6,35 @@
             [rhizome.viz :as viz]
             [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
+(defmulti stratify (fn [_ {:keys [type]}]
+                     (prn type)
+                     type))
+(defmethod stratify :head-line [org-tree headline]
+  (let [previous-level (:level (z/node org-tree))
+        current-level (:level headline)]
+    (cond
+      (= previous-level current-level)
+      (-> org-tree
+          (z/insert-right (merge headline {:children []}))
+          z/rightmost)
+      :else
+      (let [next (apply comp (repeat (inc (- previous-level current-level))
+                                     (if (> previous-level current-level) z/up z/down)))]
+        (-> org-tree
+            next
+            (z/append-child (merge headline {:children []}))
+            z/down
+            z/rightmost)))))
+(defn edit [org-tree & args] (apply z/edit org-tree update args))
+(defmethod stratify :content-line [org-tree content-line]
+  (edit org-tree :content str (:content content-line)))
+(defmethod stratify :list-item-line [org-tree list-item-line]
+  (edit org-tree :list (fn [list] (if (coll? list) (conj list (:list-item list-item-line)) [(:list-item list-item-line)]))))
+(defmethod stratify :default [org-tree _] org-tree)
+
 (defn build-tree [lines]
   (reduce
-   (fn [org-tree line]
-     (let [{:keys [type]} line
-           edit (fn [& args] (apply z/edit org-tree update args))]
-       (case type
-         :head-line
-         (let [previous-level (:level (z/node org-tree))
-               current-level (:level line)]
-           (cond
-             (= previous-level current-level)
-             (-> org-tree
-                 (z/insert-right (merge line {:children []}))
-                 z/rightmost)
-             :else
-             (let [next (apply comp (repeat (inc (- previous-level current-level))
-                                            (if (> previous-level current-level) z/up z/down)))]
-               (-> org-tree
-                   next
-                   (z/append-child (merge line {:children []}))
-                   z/down
-                   z/rightmost))))
-         :content-line
-         (edit :content str (:content line))
-         :list-item-line
-         (edit :list (fn [list] (if (coll? list) (conj list (:list-item line)) [(:list-item line)])))
-         org-tree)))
+   stratify
    (z/zipper (comp sequential? :children)
              :children
              (fn [node children] (assoc node :children children))
