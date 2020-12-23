@@ -18,7 +18,7 @@
            (cond
              (= previous-level current-level)
              (-> org-tree
-                 (z/insert-right line)
+                 (z/insert-right (merge line {:children []}))
                  z/rightmost)
              :else
              (let [next (apply comp (repeat (inc (- previous-level current-level))

@@ -64,7 +64,8 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
           {:title "Game night",
            :type :head-line,
            :level 4,
-           :tags #{"SOCIAL"}})})})})}
+           :tags #{"SOCIAL"},
+           :children []})})})})}
 #+END_SRC
 
 #+DOWNLOADED: screenshot @ 2020-12-22 12:37:32
