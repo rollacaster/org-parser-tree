@@ -3,23 +3,19 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
 
 ** Usage
 #+BEGIN_SRC clojurescript
-(ns hello-world.core
-  (:require [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]))
+  (ns hello-world.core
+    (:require [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]))
 
-(let [journal "* 2019
-** Unordered
-*** Sometime
-**** Clojure Spec basics :LEARN:TUTORIAL:
-** 2019-01 January
-*** KW01
-**** Build a snowman :SOCIAL:
-**** Game night :SOCIAL:"]
-    (->> journal
-         org-parse-tree/parse-tree
-         org-parse-tree/vizualize-tree)
-    (->> journal
-         org-parse-tree/parse-tree
-         (org-parse-tree/store-tree "resources/journal.edn")))
+  (let [journal "
+  ,* 2019
+  ,** Unordered
+  ,*** Sometime
+  ,**** Clojure Spec basics :LEARN:TUTORIAL:
+  ,** 2019-01 January
+  ,*** KW01
+  ,**** Build a snowman :SOCIAL:
+  ,**** Game night :SOCIAL:"]
+    (org-parse-tree/parse-tree journal))
 #+END_SRC
 *** Result
 #+BEGIN_SRC clojurescript
@@ -71,36 +67,72 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
 #+DOWNLOADED: screenshot @ 2020-12-22 12:37:32
 [[file:resources/org-parser-tree/2020-12-22_12-37-32_screenshot.png]]
 ** Customizations
-By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure, e.g.:
+By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure.
+*** transform
+You can customise how a parsed line from [[https://github.com/200ok-ch/org-parser][org-parser]] is transformed
 #+BEGIN_SRC clojurescript
-(ns hello-world.core
-  (:require [clojure.string :as str]
-            [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]
-            [tech.thomas-sojka.org-parser-tree.transform
-             :refer
-             [post-transform]]))
+  (ns tech.thomas-sojka.org-parser-tree.main
+    (:require [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]
+              [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
-(defn transform-link [{:keys [title] :as headline}]
-  (let [re-org-link #"\[\[(.*)\]\[(.*)\]\]"]
-      (if (str/includes? title "[[")
-        (let [[link description]
-              (drop 1 (re-find (re-matcher re-org-link title)))]
-          (-> headline
-              (assoc :link link)
-              (assoc :title (str/replace title re-org-link description))))
-        headline)))
+  (defmethod transform :list-item-line [[type & content]]
+    (let [[_ [_ suffix] _] content]
+      {:type type :list-item suffix}))
 
-(defmethod post-transform :head-line [head-line]
-  (transform-link head-line))
+  (let [journal "
+  ,**** Learned new clojure tricks                                       :LEARN:
+  After reading the Clojure style guide I learned:
+  - Use sets as function
+  - Use =list*= for nested cons
+  - Use =Constructor.= instead of =new="]
+    (org-parse-tree/parse-tree journal))
+#+END_SRC
+**** Result
+#+BEGIN_SRC clojurescript
+{:title "root",
+ :level 0,
+ :children
+ ({:title "Learned new clojure tricks",
+   :type :head-line,
+   :level 4,
+   :tags #{"LEARN"},
+   :children [],
+   :content "After reading the Clojure style guide I learned:",
+   :list
+   ["Use sets as function"
+    "Use =list*= for nested cons"
+    "Use =Constructor.= instead of =new="]})}
+#+END_SRC
+*** post-tranform
+You can customise how a parsed line from =org-parser-tree= is transformed
+#+BEGIN_SRC clojurescript
+  (ns hello-world.core
+    (:require [clojure.string :as str]
+              [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]
+              [tech.thomas-sojka.org-parser-tree.transform
+               :refer
+               [post-transform]]))
 
-(let [journal "* KW01
-** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]]"]
-  (->> journal
-       org-parse-tree/parse-tree
-       (org-parse-tree/store-tree "resources/customizations.edn")))
+  (defn transform-link [{:keys [title] :as headline}]
+    (let [re-org-link #"\[\[(.*)\]\[(.*)\]\]"]
+        (if (str/includes? title "[[")
+          (let [[link description]
+                (drop 1 (re-find (re-matcher re-org-link title)))]
+            (-> headline
+                (assoc :link link)
+                (assoc :title (str/replace title re-org-link description))))
+          headline)))
+
+  (defmethod post-transform :head-line [head-line]
+    (transform-link head-line))
+
+  (let [journal "
+  ,* KW01
+  ,** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]]"]
+    (org-parse-tree/parse-tree journal))
 #+END_SRC
 
-*** Result
+**** Result
 #+BEGIN_SRC clojurescript
   {:title "root",
    :level 0,
@@ -115,5 +147,41 @@ By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possi
        :tags #{},
        :link "https://en.wikipedia.org/wiki/Snowman",
        :children []})})}
+#+END_SRC
+*** stratify
+You can customise how =org-parser-tree= builds the tree using the [[https://clojure.github.io/clojure/clojure.zip-api.html][clojure.zip API]]
+#+BEGIN_SRC clojurescript
+  (ns tech.thomas-sojka.org-parser-tree.main
+    (:require [clojure.zip :as z]
+              [tech.thomas-sojka.org-parser-tree.core
+               :as
+               org-parse-tree
+               :refer
+               [stratify]]))
+
+  (defmethod stratify :list-item-line [org-tree list-item-line]
+    (z/edit org-tree update :content str (:list-item list-item-line) "\n"))
+
+  (let [journal "
+  ,**** Learned new clojure tricks                                       :LEARN:
+  After reading the Clojure style guide I learned:
+  - Use sets as function
+  - Use =list*= for nested cons
+  - Use =Constructor.= instead of =new="]
+    (org-parse-tree/parse-tree journal))
+
+#+END_SRC
+**** Result
+#+BEGIN_SRC clojurescript
+{:title "root",
+ :level 0,
+ :children
+ ({:title "Learned new clojure tricks",
+   :type :head-line,
+   :level 4,
+   :tags #{"LEARN"},
+   :children [],
+   :content
+   "After reading the Clojure style guide I learned:Use sets as function\nUse =list*= for nested cons\nUse =Constructor.= instead of =new=\n"})}
 #+END_SRC
 
