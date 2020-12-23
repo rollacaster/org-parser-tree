@@ -1,10 +1,16 @@
-* org-parser-tree (WIP 👷)
+* org-parser-tree
 Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]], =org-parser-tree= provides utilities to create a tree structure in clojure from an org file
+** Alpha-Status
+Currently only the following line types of [[https://github.com/200ok-ch/org-parser][org-parser]] are implemented:
+- =:head-line=
+- =:content-line=
+- =:list-item-line=
 
+But can add missing implementations or edit the existing ones by using the [[https://github.com/rollacaster/org-parser-tree#customizations][Customizations]]
 ** Usage
 #+BEGIN_SRC clojurescript
   (ns hello-world.core
-    (:require [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]))
+    (:require [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]))
 
   (let [journal "
   ,* 2019
@@ -15,7 +21,7 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
   ,*** KW01
   ,**** Build a snowman :SOCIAL:
   ,**** Game night :SOCIAL:"]
-    (org-parse-tree/parse-tree journal))
+    (parse-tree journal))
 #+END_SRC
 *** Result
 #+BEGIN_SRC clojurescript
@@ -67,12 +73,12 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
 #+DOWNLOADED: screenshot @ 2020-12-22 12:37:32
 [[file:resources/org-parser-tree/2020-12-22_12-37-32_screenshot.png]]
 ** Customizations
-By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure.
+By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure or add missing implementations dynamically
 *** transform
 You can customise how a parsed line from [[https://github.com/200ok-ch/org-parser][org-parser]] is transformed
 #+BEGIN_SRC clojurescript
   (ns tech.thomas-sojka.org-parser-tree.main
-    (:require [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]
+    (:require [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
               [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
   (defmethod transform :list-item-line [[type & content]]
@@ -85,30 +91,30 @@ You can customise how a parsed line from [[https://github.com/200ok-ch/org-parse
   - Use sets as function
   - Use =list*= for nested cons
   - Use =Constructor.= instead of =new="]
-    (org-parse-tree/parse-tree journal))
+    (parse-tree journal))
 #+END_SRC
 **** Result
 #+BEGIN_SRC clojurescript
-{:title "root",
- :level 0,
- :children
- ({:title "Learned new clojure tricks",
-   :type :head-line,
-   :level 4,
-   :tags #{"LEARN"},
-   :children [],
-   :content "After reading the Clojure style guide I learned:",
-   :list
-   ["Use sets as function"
-    "Use =list*= for nested cons"
-    "Use =Constructor.= instead of =new="]})}
+  {:title "root",
+   :level 0,
+   :children
+   ({:title "Learned new clojure tricks",
+     :type :head-line,
+     :level 4,
+     :tags #{"LEARN"},
+     :children [],
+     :content "After reading the Clojure style guide I learned:",
+     :list
+     ["Use sets as function"
+      "Use =list*= for nested cons"
+      "Use =Constructor.= instead of =new="]})}
 #+END_SRC
-*** post-tranform
+*** post-transform
 You can customise how a parsed line from =org-parser-tree= is transformed
 #+BEGIN_SRC clojurescript
   (ns hello-world.core
     (:require [clojure.string :as str]
-              [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]
+              [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
               [tech.thomas-sojka.org-parser-tree.transform
                :refer
                [post-transform]]))
@@ -129,7 +135,7 @@ You can customise how a parsed line from =org-parser-tree= is transformed
   (let [journal "
   ,* KW01
   ,** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]]"]
-    (org-parse-tree/parse-tree journal))
+    (parse-tree journal))
 #+END_SRC
 
 **** Result
@@ -154,8 +160,8 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
   (ns tech.thomas-sojka.org-parser-tree.main
     (:require [clojure.zip :as z]
               [tech.thomas-sojka.org-parser-tree.core
-               :as
-               org-parse-tree
+               :refer
+               [parse-tree]
                :refer
                [stratify]]))
 
@@ -168,7 +174,7 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
   - Use sets as function
   - Use =list*= for nested cons
   - Use =Constructor.= instead of =new="]
-    (org-parse-tree/parse-tree journal))
+    (parse-tree journal))
 
 #+END_SRC
 **** Result
