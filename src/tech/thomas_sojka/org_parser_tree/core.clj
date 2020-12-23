@@ -15,7 +15,7 @@
           (z/insert-right (merge headline {:children []}))
           z/rightmost)
       :else
-      (let [next (apply comp (repeat (inc (- previous-level current-level))
+      (let [next (apply comp (repeat (+ (- previous-level current-level) (if (> previous-level current-level) 1 0))
                                      (if (> previous-level current-level) z/up z/down)))]
         (-> org-tree
             next
