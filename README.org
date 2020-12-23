@@ -70,3 +70,65 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
 
 #+DOWNLOADED: screenshot @ 2020-12-22 12:37:32
 [[file:resources/org-parser-tree/2020-12-22_12-37-32_screenshot.png]]
+** Customizations
+By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure, e.g.:
+#+BEGIN_SRC clojurescript
+(ns hello-world.core
+  (:require [clojure.string :as str]
+            [tech.thomas-sojka.org-parser-tree.core :as org-parse-tree]
+            [tech.thomas-sojka.org-parser-tree.transform
+             :refer
+             [post-transform]]))
+
+(defn transform-link [{:keys [title] :as headline}]
+  (let [re-org-link #"\[\[(.*)\]\[(.*)\]\]"]
+      (if (str/includes? title "[[")
+        (let [[link description]
+              (drop 1 (re-find (re-matcher re-org-link title)))]
+          (-> headline
+              (assoc :link link)
+              (assoc :title (str/replace title re-org-link description))))
+        headline)))
+
+(defn transform-people [{:keys [title tags] :as headline}]
+  (if (and (some #{"SOCIAL"} tags) (str/includes? title "with"))
+    (let [[title people] (str/split title #" with ")]
+      (-> headline
+          (assoc :title (str/replace title (str " with " people) ""))
+          (assoc :people (set (map str/trim (str/split people #","))))))
+    headline))
+
+(defmethod post-transform :head-line [head-line]
+  ((comp transform-link transform-people) head-line))
+
+(let [journal "* KW01
+** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]] with Joe, Jack, Jill :SOCIAL:
+*** Game night :SOCIAL:"]
+  (->> journal
+       org-parse-tree/parse-tree))
+#+END_SRC
+
+*** Result
+#+BEGIN_SRC clojurescript
+{:title
+ "root",
+ :level 0,
+ :children ({:tags #{},
+   :type :head-line,
+   :title "KW01",
+   :level 1,
+   :children
+   ({:tags #{"SOCIAL"},
+     :type :head-line,
+     :title "Build a snowman",
+     :level 2,
+     :people #{"Joe" "Jill" "Jack"},
+     :link "https://en.wikipedia.org/wiki/Snowman",
+     :children
+     ({:tags #{"SOCIAL"},
+       :type :head-line,
+       :title "Game night",
+       :level 3,
+       :children []})})})}
+#+END_SRC
+

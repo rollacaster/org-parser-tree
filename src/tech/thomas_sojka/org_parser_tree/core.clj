@@ -4,9 +4,9 @@
             [clojure.zip :as z]
             [org-parser.parser :as parser]
             [rhizome.viz :as viz]
-            [tech.thomas-sojka.org-parser-tree.headline :as headline]))
+            [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
-(defn build-tree [headlines]
+(defn build-tree [lines]
   (reduce
    (fn [org-tree line]
      (let [{:keys [type]} line
@@ -37,7 +37,7 @@
              :children
              (fn [node children] (assoc node :children children))
              {:title "root" :level 0 :children []})
-   headlines))
+   lines))
 
 (defn store-tree [path data]
   (binding [*print-level* nil
@@ -55,24 +55,8 @@
        parser/org
        (drop 1)
        (remove (fn [[type]] (= type :empty-line)))
-       (map headline/parse)
+       (map transform)
        build-tree
        z/root))
-
-(comment
-  (let [journal "* 2019
-** Unordered
-*** Sometime
-**** Clojure Spec basics :LEARN:TUTORIAL:
-** 2019-01 January
-*** KW01
-**** Build a snowman :SOCIAL:
-**** Game night :SOCIAL:"]
-    (->> journal
-         parse-tree
-         vizualize-tree)
-    (->> journal
-         parse-tree
-         (store-tree "resources/journal.edn"))))
 
 
