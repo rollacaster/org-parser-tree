@@ -1,9 +1,6 @@
 (ns tech.thomas-sojka.org-parser-tree.core
-  (:require [clojure.java.io :as io]
-            [clojure.pprint :as pp]
-            [clojure.zip :as z]
+  (:require [clojure.zip :as z]
             [org-parser.parser :as parser]
-            [rhizome.viz :as viz]
             [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
 (defmulti stratify (fn [_ {:keys [type]}]
@@ -40,17 +37,6 @@
              (fn [node children] (assoc node :children children))
              {:title "root" :level 0 :children []})
    lines))
-
-(defn store-tree [path data]
-  (binding [*print-level* nil
-            *print-length* nil]
-    (io/make-parents path)
-    (pp/pprint data (io/writer path))))
-
-(defn vizualize-tree [root]
-  (viz/view-tree (comp sequential? :children) :children
-                 root
-                 :node->descriptor (fn [n] {:label (:title n)})))
 
 (defn parse-tree [org-file-string]
   (->> org-file-string
