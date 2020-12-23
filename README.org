@@ -90,45 +90,30 @@ By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possi
               (assoc :title (str/replace title re-org-link description))))
         headline)))
 
-(defn transform-people [{:keys [title tags] :as headline}]
-  (if (and (some #{"SOCIAL"} tags) (str/includes? title "with"))
-    (let [[title people] (str/split title #" with ")]
-      (-> headline
-          (assoc :title (str/replace title (str " with " people) ""))
-          (assoc :people (set (map str/trim (str/split people #","))))))
-    headline))
-
 (defmethod post-transform :head-line [head-line]
-  ((comp transform-link transform-people) head-line))
+  (transform-link head-line))
 
 (let [journal "* KW01
-** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]] with Joe, Jack, Jill :SOCIAL:
-*** Game night :SOCIAL:"]
+** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]]"]
   (->> journal
-       org-parse-tree/parse-tree))
+       org-parse-tree/parse-tree
+       (org-parse-tree/store-tree "resources/customizations.edn")))
 #+END_SRC
 
 *** Result
 #+BEGIN_SRC clojurescript
-{:title
- "root",
- :level 0,
- :children ({:tags #{},
-   :type :head-line,
-   :title "KW01",
-   :level 1,
-   :children
-   ({:tags #{"SOCIAL"},
+  {:title "root",
+   :level 0,
+   :children ({:title "KW01",
      :type :head-line,
-     :title "Build a snowman",
-     :level 2,
-     :people #{"Joe" "Jill" "Jack"},
-     :link "https://en.wikipedia.org/wiki/Snowman",
+     :level 1,
+     :tags #{},
      :children
-     ({:tags #{"SOCIAL"},
+     ({:title "Build a snowman",
        :type :head-line,
-       :title "Game night",
-       :level 3,
-       :children []})})})}
+       :level 2,
+       :tags #{},
+       :link "https://en.wikipedia.org/wiki/Snowman",
+       :children []})})}
 #+END_SRC
 
