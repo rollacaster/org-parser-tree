@@ -31,7 +31,8 @@
 
 (defn build-tree [lines]
   (reduce
-   stratify
+   (fn [org-tree line]
+     ((comp (partial stratify org-tree) transform) line))
    (z/zipper (comp sequential? :children)
              :children
              (fn [node children] (assoc node :children children))
@@ -42,8 +43,6 @@
   (->> org-file-string
        parser/org
        (drop 1)
-       (remove (fn [[type]] (= type :empty-line)))
-       (map transform)
        build-tree
        z/root))
 
