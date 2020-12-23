@@ -13,8 +13,8 @@
            edit (fn [& args] (apply z/edit org-tree update args))]
        (case type
          :head-line
-         (let [previous-level (count (:stars (z/node org-tree)))
-               current-level (count (:stars line))]
+         (let [previous-level (:level (z/node org-tree))
+               current-level (:level line)]
            (cond
              (= previous-level current-level)
              (-> org-tree
@@ -36,7 +36,7 @@
    (z/zipper (comp sequential? :children)
              :children
              (fn [node children] (assoc node :children children))
-             {:title "root" :stars "" :children []})
+             {:title "root" :level 0 :children []})
    headlines))
 
 (defn store-tree [path data]

@@ -24,47 +24,47 @@ Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]]
 *** Result
 #+BEGIN_SRC clojurescript
   {:title "root",
-   :stars "",
+   :level 0,
    :children
-   ({:tags nil,
+   ({:title "2019",
      :type :head-line,
-     :title "2019",
-     :stars "*",
+     :level 1,
+     :tags #{},
      :children
-     ({:tags nil,
+     ({:title "Unordered",
        :type :head-line,
-       :title "Unordered",
-       :stars "**",
+       :level 2,
+       :tags #{},
        :children
-       ({:tags nil,
+       ({:title "Sometime",
          :type :head-line,
-         :title "Sometime",
-         :stars "***",
+         :level 3,
+         :tags #{},
          :children
-         ({:tags ("LEARN" "TUTORIAL"),
+         ({:title "Clojure Spec basics",
            :type :head-line,
-           :title "Clojure Spec basics",
-           :stars "****",
+           :level 4,
+           :tags #{"LEARN" "TUTORIAL"},
            :children []})})}
-      {:tags nil,
+      {:title "2019-01 January",
        :type :head-line,
-       :title "2019-01 January",
-       :stars "**",
+       :level 2,
+       :tags #{},
        :children
-       ({:tags nil,
+       ({:title "KW01",
          :type :head-line,
-         :title "KW01",
-         :stars "***",
+         :level 3,
+         :tags #{},
          :children
-         ({:tags ("SOCIAL"),
+         ({:title "Build a snowman",
            :type :head-line,
-           :title "Build a snowman",
-           :stars "****",
+           :level 4,
+           :tags #{"SOCIAL"},
            :children []}
-          {:tags ("SOCIAL"),
+          {:title "Game night",
            :type :head-line,
-           :title "Game night",
-           :stars "****"})})})})}
+           :level 4,
+           :tags #{"SOCIAL"}})})})})}
 #+END_SRC
 
 #+DOWNLOADED: screenshot @ 2020-12-22 12:37:32

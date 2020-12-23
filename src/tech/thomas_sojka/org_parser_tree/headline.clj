@@ -24,7 +24,7 @@
     (case type
       :head-line (let [[[_ stars] [_ & title] [_ & tags]] content
                        title (str/join " " title)]
-                   (-> {:title title :type type :stars stars :tags (set tags)}
+                   (-> {:title title :type type :level (count stars) :tags (set tags)}
                        org-link->clj
                        #_(get-people tags)))
       :content-line {:type type
