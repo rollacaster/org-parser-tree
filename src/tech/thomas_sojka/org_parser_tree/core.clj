@@ -8,28 +8,30 @@
 
 (defn build-tree [headlines]
   (reduce
-   (fn [org-tree headline]
-     (let [{:keys [type]} headline
-           edit (fn [& args] (apply z/edit (z/rightmost org-tree) update args))]
+   (fn [org-tree line]
+     (let [{:keys [type]} line
+           edit (fn [& args] (apply z/edit org-tree update args))]
        (case type
          :head-line
          (let [previous-level (count (:stars (z/node org-tree)))
-               current-level (count (:stars headline))]
+               current-level (count (:stars line))]
            (cond
              (= previous-level current-level)
-             (z/insert-right org-tree headline)
+             (-> org-tree
+                 (z/insert-right line)
+                 z/rightmost)
              :else
              (let [next (apply comp (repeat (inc (- previous-level current-level))
                                             (if (> previous-level current-level) z/up z/down)))]
                (-> org-tree
                    next
-                   (z/append-child (merge headline {:children []}))
+                   (z/append-child (merge line {:children []}))
                    z/down
                    z/rightmost))))
          :content-line
-         (edit :content str (:content headline))
+         (edit :content str (:content line))
          :list-item-line
-         (edit :list (fn [list] (if (coll? list) (conj list (:list-item headline)) [(:list-item headline)])))
+         (edit :list (fn [list] (if (coll? list) (conj list (:list-item line)) [(:list-item line)])))
          org-tree)))
    (z/zipper (comp sequential? :children)
              :children
