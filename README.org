@@ -6,7 +6,11 @@ Currently only the following line types of [[https://github.com/200ok-ch/org-par
 - =:content-line=
 - =:list-item-line=
 
-But can add missing implementations or edit the existing ones by using the [[https://github.com/rollacaster/org-parser-tree#customizations][Customizations]]
+But you can add missing implementations or edit the existing ones by using the [[https://github.com/rollacaster/org-parser-tree#customizations][Customizations]]
+** [[https://clojure.org/reference/deps_and_cli][CLI/deps.edn]] dependency information:
+ #+BEGIN_SRC clojurescript
+rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser-tree" :sha "7e27de6bb8bf52a2724f3bc243c0b6ef66611a9c"}
+ #+END_SRC
 ** Usage
 #+BEGIN_SRC clojurescript
   (ns hello-world.core
