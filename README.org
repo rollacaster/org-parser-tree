@@ -78,41 +78,6 @@ rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser
 [[file:resources/org-parser-tree/2020-12-22_12-37-32_screenshot.png]]
 ** Customizations
 By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure or add missing implementations dynamically
-*** transform
-You can customise how a parsed line from [[https://github.com/200ok-ch/org-parser][org-parser]] is transformed
-#+BEGIN_SRC clojurescript
-  (ns hello-world.core
-    (:require [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
-              [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
-
-  (defmethod transform :list-item-line [[type & content]]
-    (let [[_ [_ suffix] _] content]
-      {:type type :list-item suffix}))
-
-  (let [journal "
-  ,**** Learned new clojure tricks                                       :LEARN:
-  After reading the Clojure style guide I learned:
-  - Use sets as function
-  - Use =list*= for nested cons
-  - Use =Constructor.= instead of =new="]
-    (parse-tree journal))
-#+END_SRC
-**** Result
-#+BEGIN_SRC clojurescript
-  {:title "root",
-   :level 0,
-   :children
-   ({:title "Learned new clojure tricks",
-     :type :head-line,
-     :level 4,
-     :tags #{"LEARN"},
-     :children [],
-     :content "After reading the Clojure style guide I learned:",
-     :list
-     ["Use sets as function"
-      "Use =list*= for nested cons"
-      "Use =Constructor.= instead of =new="]})}
-#+END_SRC
 *** post-transform
 You can customise how a parsed line from =org-parser-tree= is transformed
 #+BEGIN_SRC clojurescript
