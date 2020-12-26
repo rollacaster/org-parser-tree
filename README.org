@@ -163,21 +163,18 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
 #+BEGIN_SRC clojurescript
   (ns hello-world.core
     (:require [clojure.zip :as z]
-              [tech.thomas-sojka.org-parser-tree.core
-               :refer
-               [parse-tree]
-               :refer
-               [stratify]]))
+              [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
+              [tech.thomas-sojka.org-parser-tree.stratify :refer [stratify]]))
 
   (defmethod stratify :list-item-line [org-tree list-item-line]
     (z/edit org-tree update :content str (:list-item list-item-line) "\n"))
 
   (let [journal "
-  ,**** Learned new clojure tricks                                       :LEARN:
-  After reading the Clojure style guide I learned:
-  - Use sets as function
-  - Use =list*= for nested cons
-  - Use =Constructor.= instead of =new="]
+    ,,**** Learned new clojure tricks                                       :LEARN:
+    After reading the Clojure style guide I learned:
+    - Use sets as function
+    - Use =list*= for nested cons
+    - Use =Constructor.= instead of =new="]
     (parse-tree journal))
 
 #+END_SRC
