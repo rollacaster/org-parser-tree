@@ -9,7 +9,7 @@ Currently only the following line types of [[https://github.com/200ok-ch/org-par
 But you can add missing implementations or edit the existing ones by using the [[https://github.com/rollacaster/org-parser-tree#customizations][Customizations]]
 ** [[https://clojure.org/reference/deps_and_cli][CLI/deps.edn]] dependency information:
  #+BEGIN_SRC clojurescript
-rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser-tree" :sha "7e27de6bb8bf52a2724f3bc243c0b6ef66611a9c"}
+rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser-tree" :sha "e7f0876fbb4b7793081bcdf7f94df39c440f9c1f"}
  #+END_SRC
 ** Usage
 #+BEGIN_SRC clojurescript
