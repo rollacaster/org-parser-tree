@@ -1,5 +1,5 @@
 * org-parser-tree
-Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]], =org-parser-tree= provides utilities to create a tree structure in clojure from an org file
+Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]], =org-parser-tree= provides utilities to create a Clojure tree structure from an org file
 ** Alpha-Status
 Currently only the following [[https://github.com/200ok-ch/org-parser/blob/master/resources/org.ebnf][line types]] of [[https://github.com/200ok-ch/org-parser][org-parser]] are implemented:
 - =:head-line=
@@ -76,6 +76,14 @@ rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser
 
 #+DOWNLOADED: screenshot @ 2020-12-22 12:37:32
 [[file:resources/org-parser-tree/2020-12-22_12-37-32_screenshot.png]]
+** How it works
+During the creation of the tree structure three functions are called for each [[https://github.com/200ok-ch/org-parser/blob/master/resources/org.ebnf][line type]] of [[https://github.com/200ok-ch/org-parser][org-parser]]:
+
+- =transform=: Transform a line of [[https://github.com/200ok-ch/org-parser][org-parser]] to another Clojure data-structure
+- =post-transform=: Transform a line of =org-parser-tree= to another Clojure data-structure
+- =stratify=: Place a transformed line into the tree structure by using [[https://clojure.github.io/clojure/clojure.zip-api.html][clojure.zip]]
+
+It's possible to customize any part of the tree creation.
 ** Customizations
 By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure or add missing implementations dynamically
 *** post-transform
