@@ -1,7 +1,7 @@
 * org-parser-tree
 Building upon the awesome [[https://github.com/200ok-ch/org-parser][org-parser]], =org-parser-tree= provides utilities to create a tree structure in clojure from an org file
 ** Alpha-Status
-Currently only the following line types of [[https://github.com/200ok-ch/org-parser][org-parser]] are implemented:
+Currently only the following [[https://github.com/200ok-ch/org-parser/blob/master/resources/org.ebnf][line types]] of [[https://github.com/200ok-ch/org-parser][org-parser]] are implemented:
 - =:head-line=
 - =:content-line=
 - =:list-item-line=
@@ -157,7 +157,7 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
    "After reading the Clojure style guide I learned:Use sets as function\nUse =list*= for nested cons\nUse =Constructor.= instead of =new=\n"})}
 #+END_SRC
 *** transform
-You can add missing implementations implementations or replace existing ones
+You can add missing implementations of [[https://github.com/200ok-ch/org-parser/blob/master/resources/org.ebnf][line types]] from [[https://github.com/200ok-ch/org-parser][org-parser]] or replace existing ones
 #+BEGIN_SRC clojurescript
   (ns hello-world.core
     (:require [clojure.string :as str]
