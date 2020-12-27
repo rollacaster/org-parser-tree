@@ -135,11 +135,11 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
     (z/edit org-tree update :content str (:list-item list-item-line) "\n"))
 
   (let [journal "
-    ,,**** Learned new clojure tricks                                       :LEARN:
-    After reading the Clojure style guide I learned:
-    - Use sets as function
-    - Use =list*= for nested cons
-    - Use =Constructor.= instead of =new="]
+  ,**** Learned new clojure tricks                                       :LEARN:
+  After reading the Clojure style guide I learned:
+  - Use sets as function
+  - Use =list*= for nested cons
+  - Use =Constructor.= instead of =new="]
     (parse-tree journal))
 
 #+END_SRC
