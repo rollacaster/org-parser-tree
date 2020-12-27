@@ -156,4 +156,37 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
    :content
    "After reading the Clojure style guide I learned:Use sets as function\nUse =list*= for nested cons\nUse =Constructor.= instead of =new=\n"})}
 #+END_SRC
+*** transform
+You can add missing implementations implementations or replace existing ones
+#+BEGIN_SRC clojurescript
+  (ns hello-world.core
+    (:require [clojure.string :as str]
+              [clojure.zip :as z]
+              [tech.thomas-sojka.org-parser-tree.core :refer parse-tree]
+              [tech.thomas-sojka.org-parser-tree.stratify :refer [stratify]]
+              [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
+
+  (defmethod transform :drawer-begin-line [[_ [_ drawer-name]]]
+    {:type :drawer-begin-line
+     :drawer (keyword (str/lower-case drawer-name))})
+  (defmethod stratify :drawer-begin-line [org-tree drawer-begin-line]
+    (z/replace org-tree (assoc (z/node org-tree) (:drawer drawer-begin-line) [])))
+  (parse-tree "
+  ,* Test
+  :MY-DRAWER:
+  :END:")
+#+END_SRC
+**** Result
+#+BEGIN_SRC clojurescript
+  {:children
+   ({:tags #{},
+     :type :head-line,
+     :title "Test",
+     :level 1,
+     :children [],
+     :my-drawer [],
+     :end []}),
+   :title "root",
+   :level 0}
+#+END_SRC
 
