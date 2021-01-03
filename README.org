@@ -5,6 +5,7 @@ Currently only the following [[https://github.com/200ok-ch/org-parser/blob/maste
 - =:head-line=
 - =:content-line=
 - =:list-item-line=
+- =:drawer-begin-item=
 
 But you can add missing implementations or edit the existing ones by using the [[https://github.com/rollacaster/org-parser-tree#customizations][Customizations]]
 ** [[https://clojure.org/reference/deps_and_cli][CLI/deps.edn]] dependency information:

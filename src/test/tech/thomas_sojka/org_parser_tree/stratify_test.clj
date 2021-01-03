@@ -24,4 +24,21 @@
                 :content
                 "After reading the Clojure style guide I learned:- Use sets as function- Use =list*= for nested cons- Use =Constructor.= instead of =new="}),
               :title "root",
-              :level 0})))))
+              :level 0}))))
+  (testing "Parses drawers"
+    (is (= (parse-tree "
+* Test
+:PROPERTIES:
+:language: en
+:source:   npm
+:created-at: [2017-06-18]
+:END:")
+           {:children
+            '({:title "Test",
+               :type :head-line,
+               :level 1,
+               :tags #{},
+               :children [],
+               :properties {:language "en", :source "npm", :created-at "[2017-06-18]"}}),
+            :title "root",
+            :level 0}))))
