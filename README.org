@@ -168,34 +168,29 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
 *** transform
 You can add missing implementations of [[https://github.com/200ok-ch/org-parser/blob/master/resources/org.ebnf][line types]] from [[https://github.com/200ok-ch/org-parser][org-parser]] or replace existing ones
 #+BEGIN_SRC clojurescript
-  (ns hello-world.core
-    (:require [clojure.string :as str]
-              [clojure.zip :as z]
-              [tech.thomas-sojka.org-parser-tree.core :refer parse-tree]
+  (ns hello-word.core
+    (:require [clojure.zip :as z]
+              [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
               [tech.thomas-sojka.org-parser-tree.stratify :refer [stratify]]
               [tech.thomas-sojka.org-parser-tree.transform :refer [transform]]))
 
-  (defmethod transform :drawer-begin-line [[_ [_ drawer-name]]]
-    {:type :drawer-begin-line
-     :drawer (keyword (str/lower-case drawer-name))})
-  (defmethod stratify :drawer-begin-line [org-tree drawer-begin-line]
-    (z/replace org-tree (assoc (z/node org-tree) (:drawer drawer-begin-line) [])))
-  (parse-tree "
-  ,* Test
-  :MY-DRAWER:
-  :END:")
+  (defmethod transform :keyword-line [[_ [_ keyword-key] [_ keyword-value]]]
+    {:type :keyword-line
+     :key keyword-key
+     :value keyword-value})
+
+  (defmethod stratify :keyword-line [org-tree {:keys [key value]}]
+    (z/replace org-tree (assoc (z/node org-tree) :keywords {(keyword key) value})))
+
+  (parse-tree "#+TAGS: WORK(w)
+  ,* 2021")
 #+END_SRC
 **** Result
 #+BEGIN_SRC clojurescript
   {:children
-   ({:tags #{},
-     :type :head-line,
-     :title "Test",
-     :level 1,
-     :children [],
-     :my-drawer [],
-     :end []}),
+   ({:tags #{}, :type :head-line, :title "2021", :level 1, :children []}),
    :title "root",
-   :level 0}
+   :level 0,
+   :keywords {:TAGS "WORK(w)"}}
 #+END_SRC
 
