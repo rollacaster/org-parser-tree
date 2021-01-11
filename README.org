@@ -17,7 +17,7 @@ rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser
   (ns hello-world.core
     (:require [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]))
 
-  (let [journal "
+  (parse-tree "
   ,* 2019
   ,** Unordered
   ,*** Sometime
@@ -25,8 +25,7 @@ rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser
   ,** 2019-01 January
   ,*** KW01
   ,**** Build a snowman :SOCIAL:
-  ,**** Game night :SOCIAL:"]
-    (parse-tree journal))
+  ,**** Game night :SOCIAL:")
 #+END_SRC
 *** Result
 #+BEGIN_SRC clojurescript
@@ -89,7 +88,7 @@ It's possible to customize any part of the tree creation.
 By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure or add missing implementations dynamically
 *** post-transform
 You can customise how a parsed line from =org-parser-tree= is transformed
-#+BEGIN_SRC clojurescript
+#+BEGIN_SRC clojure
   (ns hello-world.core
     (:require [clojure.string :as str]
               [tech.thomas-sojka.org-parser-tree.core :refer [parse-tree]]
@@ -110,10 +109,9 @@ You can customise how a parsed line from =org-parser-tree= is transformed
   (defmethod post-transform :head-line [head-line]
     (transform-link head-line))
 
-  (let [journal "
+  (parse-tree "
   ,* KW01
-  ,** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]]"]
-    (parse-tree journal))
+  ,** Build a [[https://en.wikipedia.org/wiki/Snowman][snowman]]")
 #+END_SRC
 
 **** Result
@@ -143,13 +141,12 @@ You can customise how =org-parser-tree= builds the tree using the [[https://cloj
   (defmethod stratify :list-item-line [org-tree list-item-line]
     (z/edit org-tree update :content str (:list-item list-item-line) "\n"))
 
-  (let [journal "
+  (parse-tree "
   ,**** Learned new clojure tricks                                       :LEARN:
   After reading the Clojure style guide I learned:
   - Use sets as function
   - Use =list*= for nested cons
-  - Use =Constructor.= instead of =new="]
-    (parse-tree journal))
+  - Use =Constructor.= instead of =new=")
 
 #+END_SRC
 **** Result
