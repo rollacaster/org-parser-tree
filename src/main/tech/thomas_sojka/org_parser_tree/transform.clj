@@ -16,7 +16,7 @@
     (post-transform {:type type :list-item (str counter suffix " " contents)})))
 (defmethod transform :default [line] line)
 (defmethod transform :drawer-begin-line [[_ [_ drawer-name]]]
-  (if (= drawer-name "END")
-    {:type :drawer-end-line}
-    {:type :drawer-begin-line
-     :drawer (keyword (str/lower-case drawer-name))}))
+  {:type :drawer-begin-line
+   :drawer (keyword (str/lower-case drawer-name))})
+(defmethod transform :drawer-end-line [[_ _]]
+  {:type :drawer-end-line})
