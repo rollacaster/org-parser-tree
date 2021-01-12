@@ -7,7 +7,7 @@ Currently only the following [[https://github.com/200ok-ch/org-parser/blob/maste
 - =:list-item-line=
 - =:drawer-begin-item=
 
-But you can add missing implementations or edit the existing ones by using the [[https://github.com/rollacaster/org-parser-tree#customizations][Customizations]]
+=org-parser-tree= is [[https://github.com/rollacaster/org-parser-tree#extensibility][extensible]] can add missing implementations or edit the existing ones
 ** [[https://clojure.org/reference/deps_and_cli][CLI/deps.edn]] dependency information:
  #+BEGIN_SRC clojurescript
 rollacaster/org-parser-tree {:git/url "https://github.com/rollacaster/org-parser-tree" :sha "e7510a6b3bc6abebfd4428c236e0e449c7be6ee1"}
@@ -83,11 +83,11 @@ During the creation of the tree structure three functions are called for each [[
 - =post-transform=: Transform a line of =org-parser-tree= to another Clojure data-structure
 - =stratify=: Place a transformed line into the tree structure by using [[https://clojure.github.io/clojure/clojure.zip-api.html][clojure.zip]]
 
-It's possible to customize any part of the tree creation.
-** Customizations
-By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to customize the generated data structure or add missing implementations dynamically
+It's possible to extend any part of the tree creation.
+** Extensibility
+By using [[https://clojure.org/reference/multimethods][Multimethods]] it's possible to extend the generated data structure or add missing implementations dynamically
 *** post-transform
-You can customise how a parsed line from =org-parser-tree= is transformed
+You can extend how a parsed line from =org-parser-tree= is transformed
 #+BEGIN_SRC clojure
   (ns hello-world.core
     (:require [clojure.string :as str]
@@ -131,7 +131,7 @@ You can customise how a parsed line from =org-parser-tree= is transformed
        :children []})})}
 #+END_SRC
 *** stratify
-You can customise how =org-parser-tree= builds the tree using the [[https://clojure.github.io/clojure/clojure.zip-api.html][clojure.zip API]]
+You can extend how =org-parser-tree= builds the tree using the [[https://clojure.github.io/clojure/clojure.zip-api.html][clojure.zip API]]
 #+BEGIN_SRC clojurescript
   (ns hello-world.core
     (:require [clojure.zip :as z]
