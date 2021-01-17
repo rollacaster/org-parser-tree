@@ -1,4 +1,4 @@
 {:deps {org-parser/org-parser {:mvn/version "0.1.5"}
         rhizome/rhizome {:mvn/version "0.2.9"}}
- :paths ["src/main" "resources"]
- :aliases {:test {:extra-paths ["src/test"]}}}
+ :paths ["src" "resources"]
+ :aliases {:test {:extra-paths ["test"]}}}
